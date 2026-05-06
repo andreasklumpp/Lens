@@ -11,7 +11,7 @@ protocol LLMClientProtocol: Sendable {
 
 struct OllamaClient: LLMClientProtocol {
 
-    private static let systemPrompt = """
+    static let defaultSystemPrompt = """
         Summarize the following text concisely in 2–3 sentences.
         Focus on the key points. Do not add commentary or preamble.
         Always respond in the same language as the input text.
@@ -25,6 +25,8 @@ struct OllamaClient: LLMClientProtocol {
                         ?? "http://localhost:11434"
                     let model = UserDefaults.standard.string(forKey: "modelName")
                         ?? "llama3.2"
+                    let systemPrompt = UserDefaults.standard.string(forKey: "systemPrompt")
+                        ?? Self.defaultSystemPrompt
 
                     guard let url = URL(string: "\(baseURL)/api/generate") else {
                         throw OllamaError.invalidURL(baseURL)
@@ -36,7 +38,7 @@ struct OllamaClient: LLMClientProtocol {
 
                     let body = OllamaRequest(
                         model: model,
-                        prompt: "\(Self.systemPrompt)\n\nText:\n\(text)\n\nSummary:",
+                        prompt: "\(systemPrompt)\n\nText:\n\(text)\n\nSummary:",
                         stream: true
                     )
                     request.httpBody = try JSONEncoder().encode(body)

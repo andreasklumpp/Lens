@@ -6,6 +6,7 @@ struct SettingsView: View {
 
     @AppStorage("ollamaURL") private var ollamaURL = "http://localhost:11434"
     @AppStorage("modelName") private var modelName = "llama3.2"
+    @AppStorage("systemPrompt") private var systemPrompt = OllamaClient.defaultSystemPrompt
 
     var body: some View {
         Form {
@@ -21,13 +22,13 @@ struct SettingsView: View {
 
             Section("Ollama") {
                 LabeledContent("Server URL") {
-                    TextField("http://localhost:11434", text: $ollamaURL)
+                    TextField("", text: $ollamaURL)
                         .textFieldStyle(.roundedBorder)
                         .frame(width: 210)
                 }
 
                 LabeledContent("Model") {
-                    TextField("llama3.2", text: $modelName)
+                    TextField("", text: $modelName)
                         .textFieldStyle(.roundedBorder)
                         .frame(width: 210)
                 }
@@ -43,8 +44,25 @@ struct SettingsView: View {
                 }
                 .padding(.top, 2)
             }
+
+            Section("Summary Style") {
+                VStack(alignment: .leading, spacing: 6) {
+                    Text("System Prompt")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                    TextEditor(text: $systemPrompt)
+                        .font(.system(.body, design: .monospaced))
+                        .frame(minHeight: 100)
+                        .scrollContentBackground(.hidden)
+                        .background(Color.secondary.opacity(0.08), in: RoundedRectangle(cornerRadius: 6))
+                    Button("Reset to Default") {
+                        systemPrompt = OllamaClient.defaultSystemPrompt
+                    }
+                    .font(.caption)
+                }
+            }
         }
         .formStyle(.grouped)
-        .frame(width: 400, height: 280)
+        .frame(width: 520, height: 520)
     }
 }

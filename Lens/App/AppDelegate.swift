@@ -48,9 +48,6 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         let menu = NSMenu()
         menu.addItem(withTitle: "Settings…", action: #selector(openSettings), keyEquivalent: ",")
         menu.addItem(.separator())
-        // Useful during development — remove once everything works
-        menu.addItem(withTitle: "Test Panel", action: #selector(testPanel), keyEquivalent: "t")
-        menu.addItem(.separator())
         menu.addItem(withTitle: "Quit Lens", action: #selector(quitApp), keyEquivalent: "q")
         statusItem?.menu = menu
     }
@@ -109,15 +106,10 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 
     // MARK: - Actions
 
-    @objc private func testPanel() {
-        summaryStore.send(.textExtracted("This is a test. The panel should appear with a streaming summary below."))
-        PanelManager.shared.show()
-    }
-
     @objc private func openSettings() {
         if settingsWindow == nil {
             let window = NSWindow(
-                contentRect: NSRect(x: 0, y: 0, width: 380, height: 300),
+                contentRect: NSRect(x: 0, y: 0, width: 800, height: 500),
                 styleMask: [.titled, .closable, .miniaturizable],
                 backing: .buffered,
                 defer: false
@@ -128,6 +120,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             window.isReleasedWhenClosed = false
             settingsWindow = window
         }
+        settingsWindow?.center()
         settingsWindow?.makeKeyAndOrderFront(nil)
         NSApp.activate(ignoringOtherApps: true)
     }
