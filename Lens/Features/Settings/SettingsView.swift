@@ -21,28 +21,23 @@ struct SettingsView: View {
             }
 
             Section("Ollama") {
-                LabeledContent("Server URL") {
-                    TextField("", text: $ollamaURL)
-                        .textFieldStyle(.roundedBorder)
-                        .frame(width: 210)
-                }
-
                 LabeledContent("Model") {
                     TextField("", text: $modelName)
                         .textFieldStyle(.roundedBorder)
                         .frame(width: 210)
                 }
 
-                VStack(alignment: .leading, spacing: 4) {
-                    Text("Setup (run once in Terminal):")
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
-                    Text("brew install ollama\nollama serve\nollama pull \(modelName)")
-                        .font(.system(.caption, design: .monospaced))
-                        .foregroundStyle(.secondary)
-                        .textSelection(.enabled)
+                OllamaStatusRow(modelName: modelName)
+            }
+
+            Section {
+                DisclosureGroup("Advanced") {
+                    LabeledContent("Server URL") {
+                        TextField("", text: $ollamaURL)
+                            .textFieldStyle(.roundedBorder)
+                            .frame(width: 210)
+                    }
                 }
-                .padding(.top, 2)
             }
 
             Section("Summary Style") {
@@ -64,5 +59,79 @@ struct SettingsView: View {
         }
         .formStyle(.grouped)
         .frame(width: 520, height: 520)
+    }
+}
+
+// MARK: - OllamaStatusRow
+
+private struct OllamaStatusRow: View {
+    let modelName: String
+    private var manager: OllamaManager { OllamaManager.shared }
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            LabeledContent("Server") {
+                HStack(spacing: 6) {
+                    serverIndicator
+                    Text(manager.serverStatus.label)
+                        .foregroundStyle(.secondary)
+                }
+            }
+
+            LabeledContent("Model") {
+                HStack(spacing: 6) {
+                    if case let .pulling(progress) = manager.modelStatus {
+                        ProgressView(value: progress)
+                            .frame(width: 80)
+                        Text("\(Int(progress * 100))%")
+                            .foregroundStyle(.secondary)
+                            .monospacedDigit()
+                    } else {
+                        modelIndicator
+                        Text(manager.modelStatus.label)
+                            .foregroundStyle(.secondary)
+                        if manager.modelStatus == .unknown || {
+                            if case .failed = manager.modelStatus { return true }
+                            return false
+                        }() {
+                            Button("Pull") {
+                                Task { await manager.pullModel(modelName) }
+                            }
+                            .buttonStyle(.bordered)
+                            .controlSize(.small)
+                            .disabled(manager.serverStatus != .running)
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    @ViewBuilder
+    private var serverIndicator: some View {
+        switch manager.serverStatus {
+        case .running:
+            Circle().fill(.green).frame(width: 8, height: 8)
+        case .starting, .downloading:
+            ProgressView().controlSize(.mini)
+        case .failed:
+            Circle().fill(.red).frame(width: 8, height: 8)
+        case .idle:
+            Circle().fill(.secondary).frame(width: 8, height: 8)
+        }
+    }
+
+    @ViewBuilder
+    private var modelIndicator: some View {
+        switch manager.modelStatus {
+        case .available:
+            Circle().fill(.green).frame(width: 8, height: 8)
+        case .checking, .pulling:
+            ProgressView().controlSize(.mini)
+        case .failed:
+            Circle().fill(.red).frame(width: 8, height: 8)
+        case .unknown:
+            Circle().fill(.orange).frame(width: 8, height: 8)
+        }
     }
 }

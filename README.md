@@ -13,7 +13,9 @@ Select text anywhere, press **⌥Space**, and a floating summary appears next to
 - **Global hotkey** — ⌥Space works in any app, any window
 - **Floating panel** — appears near your selection, never steals focus
 - **Local LLM via Ollama** — fully on-device, works offline, GPU-accelerated on Apple Silicon
+- **Zero-setup Ollama** — Lens starts Ollama automatically on launch; downloads it if not installed
 - **Language-aware** — summaries are always in the same language as the selected text
+- **Customizable system prompt** — tune the summary style directly from Settings
 - **Minimal footprint** — lives in the menubar, no Dock icon
 
 ---
@@ -22,8 +24,9 @@ Select text anywhere, press **⌥Space**, and a floating summary appears next to
 
 - macOS 14 (Sonoma) or later
 - Apple Silicon or Intel Mac
-- [Ollama](https://ollama.com) (for real summaries — see setup below)
 - Xcode 15+ (to build from source)
+
+> Ollama is managed automatically by Lens. No manual installation required.
 
 ---
 
@@ -47,15 +50,9 @@ Select the **Lens** scheme and press **⌘R**. On first launch, macOS will ask f
 
 Once granted, the hotkey activates automatically (no restart needed).
 
-### 3. Install Ollama (for real summaries)
+### 3. That's it
 
-```bash
-brew install ollama
-ollama serve          # starts the local inference server
-ollama pull llama3.2  # downloads the default model (~2 GB)
-```
-
-Then open **Lens → Settings**, uncheck **Use Mock LLM**, and you're live.
+Lens starts Ollama automatically in the background. If Ollama isn't installed, it downloads the binary on first launch. The default model (`llama3.2`) is pulled automatically if not already available — or you can pull any model from **Settings**.
 
 ---
 
@@ -77,8 +74,11 @@ Open via the menubar icon → **Settings…**
 
 | Setting | Description |
 |---|---|
-| Ollama URL | Default: `http://localhost:11434` |
-| Model | Any model pulled via `ollama pull` — default: `llama3.2` |
+| Model | Any model pulled via `ollama pull` or the Pull button — default: `llama3.2` |
+| Server status | Live indicator showing whether Ollama is running |
+| Model status | Shows if the selected model is available; includes a **Pull** button to download it |
+| System Prompt | Controls how the LLM summarizes text; editable with a Reset to Default button |
+| Server URL *(Advanced)* | Default: `http://localhost:11434` |
 
 Changes take effect immediately on the next summary request.
 
@@ -107,9 +107,10 @@ Lens/
 │   │   └── SummaryView.swift     # Floating panel UI, all phases
 │   └── Settings/
 │       ├── SettingsFeature.swift # TCA Reducer — settings state
-│       └── SettingsView.swift    # Settings window
+│       └── SettingsView.swift    # Settings window with live Ollama status
 └── Core/
-    ├── LLMClient.swift         # Protocol + OllamaClient + MockLLMClient
+    ├── LLMClient.swift         # Protocol + OllamaClient (reads model/URL/prompt from UserDefaults)
+    ├── OllamaManager.swift     # Auto-starts Ollama, downloads binary if needed, pulls models
     ├── TextExtractor.swift     # AXUIElement selected-text extraction (+ ⌘C fallback)
     ├── HotkeyManager.swift     # Global CGEventTap for ⌥Space and Esc
     └── PanelManager.swift      # Borderless, non-activating NSPanel lifecycle
@@ -145,7 +146,7 @@ Then swap the `liveValue` in `LLMClientKey`. The reducer, view, and panel are un
 |---|---|
 | [swift-composable-architecture](https://github.com/pointfreeco/swift-composable-architecture) | State management |
 
-No other third-party dependencies. Text extraction uses `AXUIElement` (Accessibility framework). The hotkey uses `CGEventTap` (CoreGraphics). Ollama is an optional external process.
+No other third-party dependencies. Text extraction uses `AXUIElement` (Accessibility framework). The hotkey uses `CGEventTap` (CoreGraphics). Ollama is managed as a subprocess via `Foundation.Process`.
 
 ---
 
@@ -153,7 +154,7 @@ No other third-party dependencies. Text extraction uses `AXUIElement` (Accessibi
 
 - No data leaves your machine
 - No analytics, no telemetry
-- Selected text is sent only to the local Ollama process (or discarded in mock mode)
+- Selected text is sent only to the local Ollama process
 - Accessibility permission is used exclusively to read selected text
 
 ---

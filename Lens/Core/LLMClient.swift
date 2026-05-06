@@ -106,7 +106,7 @@ enum OllamaError: LocalizedError {
         case .invalidResponse:    return "Unexpected response from Ollama."
         case let .httpError(c):   return "Ollama returned HTTP \(c)."
         case .notRunning:
-            return "Ollama isn't running. Install with: brew install ollama\nThen start: ollama serve"
+            return "Ollama isn't running. Please wait a moment and try again."
         }
     }
 }

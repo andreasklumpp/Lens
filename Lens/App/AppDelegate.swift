@@ -28,11 +28,13 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         setupHotkey()
         requestAccessibilityIfNeeded()
         startPhaseObservation()
+        startOllama()
     }
 
     func applicationWillTerminate(_ notification: Notification) {
         phaseObservationTask?.cancel()
         HotkeyManager.shared.stop()
+        OllamaManager.shared.stop()
     }
 
     // MARK: - Menubar
@@ -92,6 +94,15 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
                 }
                 try? await Task.sleep(nanoseconds: 50_000_000) // 50 ms
             }
+        }
+    }
+
+    // MARK: - Ollama
+
+    private func startOllama() {
+        let model = UserDefaults.standard.string(forKey: "modelName") ?? "llama3.2"
+        Task {
+            await OllamaManager.shared.start(model: model)
         }
     }
 

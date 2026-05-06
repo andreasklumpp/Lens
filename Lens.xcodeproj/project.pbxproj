@@ -17,6 +17,7 @@
 		BB200000000000000000008A /* TextExtractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB100000000000000000008A /* TextExtractor.swift */; };
 		BB200000000000000000009A /* LLMClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB100000000000000000009A /* LLMClient.swift */; };
 		BB20000000000000000000AA /* PanelManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB10000000000000000000AA /* PanelManager.swift */; };
+		BB20000000000000000000BA /* OllamaManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB10000000000000000000EA /* OllamaManager.swift */; };
 		BB20000000000000000000CA /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = BB10000000000000000000CA /* Assets.xcassets */; };
 		BB700000000000000000003A /* ComposableArchitecture in Frameworks */ = {isa = PBXBuildFile; productRef = BB700000000000000000002A /* ComposableArchitecture */; };
 /* End PBXBuildFile section */
@@ -36,6 +37,7 @@
 		BB10000000000000000000BA /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		BB10000000000000000000CA /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		BB10000000000000000000DA /* Lens.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Lens.entitlements; sourceTree = "<group>"; };
+		BB10000000000000000000EA /* OllamaManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OllamaManager.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -122,6 +124,7 @@
 				BB100000000000000000008A /* TextExtractor.swift */,
 				BB100000000000000000009A /* LLMClient.swift */,
 				BB10000000000000000000AA /* PanelManager.swift */,
+				BB10000000000000000000EA /* OllamaManager.swift */,
 			);
 			path = Core;
 			sourceTree = "<group>";
@@ -219,6 +222,7 @@
 				BB200000000000000000008A /* TextExtractor.swift in Sources */,
 				BB200000000000000000009A /* LLMClient.swift in Sources */,
 				BB20000000000000000000AA /* PanelManager.swift in Sources */,
+				BB20000000000000000000BA /* OllamaManager.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
